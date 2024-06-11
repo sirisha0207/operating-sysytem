@@ -1,0 +1,16 @@
+#include <stdio.h>
+#include <pthread.h>
+
+#define NUM_THREADS 5
+
+void *threadFunction(void *threadId) {
+    printf("Hello from thread %ld\n", (long)threadId);
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t threads[NUM_THREADS];
+    for(long t = 0; t < NUM_THREADS; t++)
+        pthread_create(&threads[t], NULL, threadFunction, (void *)t);
+    pthread_exit(NULL);
+}
