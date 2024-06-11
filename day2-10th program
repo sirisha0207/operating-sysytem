@@ -1,0 +1,26 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+
+#define MAX_TEXT 512
+
+struct msgbuf { long mtype; char mtext[MAX_TEXT]; };
+
+int main() {
+    int msgid = msgget(ftok(".", 'B'), 0666 | IPC_CREAT);
+    struct msgbuf msg;
+
+    fgets(msg.mtext, MAX_TEXT, stdin);
+    msg.mtype = 1;
+    msgsnd(msgid, (void *)&msg, MAX_TEXT, 0);
+
+    msgrcv(msgid, (void *)&msg, MAX_TEXT, 0, 0);
+    printf("Received message: %s", msg.mtext);
+
+    msgctl(msgid, IPC_RMID, NULL);
+    return 0;
+}
